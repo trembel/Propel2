@@ -40,6 +40,7 @@ class PropelTypes
     public const LONGVARBINARY = 'LONGVARBINARY';
     public const BLOB = 'BLOB';
     public const DATE = 'DATE';
+    public const DATETIME = 'DATETIME';
     public const TIME = 'TIME';
     public const TIMESTAMP = 'TIMESTAMP';
     public const BU_DATE = 'BU_DATE';
@@ -73,6 +74,7 @@ class PropelTypes
     public const BLOB_NATIVE_TYPE = 'resource';
     public const BU_DATE_NATIVE_TYPE = 'string';
     public const DATE_NATIVE_TYPE = 'string';
+    public const DATETIME_NATIVE_TYPE = 'string';
     public const TIME_NATIVE_TYPE = 'string';
     public const TIMESTAMP_NATIVE_TYPE = 'string';
     public const BU_TIMESTAMP_NATIVE_TYPE = 'string';
@@ -109,6 +111,7 @@ class PropelTypes
         self::LONGVARBINARY,
         self::BLOB,
         self::DATE,
+        self::DATETIME,
         self::TIME,
         self::TIMESTAMP,
         self::BOOLEAN,
@@ -151,6 +154,7 @@ class PropelTypes
         self::LONGVARBINARY => self::LONGVARBINARY_NATIVE_TYPE,
         self::BLOB => self::BLOB_NATIVE_TYPE,
         self::DATE => self::DATE_NATIVE_TYPE,
+        self::DATETIME => self::DATETIME_NATIVE_TYPE,
         self::BU_DATE => self::BU_DATE_NATIVE_TYPE,
         self::TIME => self::TIME_NATIVE_TYPE,
         self::TIMESTAMP => self::TIMESTAMP_NATIVE_TYPE,
@@ -191,6 +195,7 @@ class PropelTypes
         self::LONGVARBINARY => PDO::PARAM_LOB,
         self::BLOB => PDO::PARAM_LOB,
         self::DATE => PDO::PARAM_STR,
+        self::DATETIME => PDO::PARAM_STR,
         self::TIME => PDO::PARAM_STR,
         self::TIMESTAMP => PDO::PARAM_STR,
         self::BOOLEAN => PDO::PARAM_BOOL,
@@ -278,6 +283,7 @@ class PropelTypes
     {
         return in_array($type, [
             self::DATE,
+            self::DATETIME,
             self::TIME,
             self::TIMESTAMP,
             self::BU_DATE,
@@ -300,6 +306,7 @@ class PropelTypes
             self::LONGVARCHAR,
             self::CLOB,
             self::DATE,
+            self::DATETIME,
             self::TIME,
             self::TIMESTAMP,
             self::BU_DATE,

@@ -148,7 +148,7 @@ class ObjectBuilder extends AbstractObjectBuilder
             $fmt = $this->getPlatform()->getDateFormatter();
         } elseif ($column->getType() === PropelTypes::TIME) {
             $fmt = $this->getPlatform()->getTimeFormatter();
-        } elseif ($column->getType() === PropelTypes::TIMESTAMP) {
+        } elseif ($column->getType() === PropelTypes::TIMESTAMP || $column->getType() === PropelTypes::DATETIME) {
             $fmt = $this->getPlatform()->getTimestampFormatter();
         }
 
@@ -871,7 +871,7 @@ abstract class " . $this->getUnqualifiedClassName() . $parentClass . ' implement
         $handleMysqlDate = false;
         $mysqlInvalidDateString = '';
         if ($this->getPlatform() instanceof MysqlPlatform) {
-            if ($column->getType() === PropelTypes::TIMESTAMP) {
+            if (in_array($column->getType(), [PropelTypes::TIMESTAMP, PropelTypes::DATETIME], true)) {
                 $handleMysqlDate = true;
                 $mysqlInvalidDateString = '0000-00-00 00:00:00';
             } elseif ($column->getType() === PropelTypes::DATE) {
@@ -900,6 +900,43 @@ abstract class " . $this->getUnqualifiedClassName() . $parentClass . ' implement
     }
 
     /**
+     * Gets the default format for a temporal column from the configuration
+     *
+     * @param \Propel\Generator\Model\Column $column
+     *
+     * @return string|null
+     */
+    protected function getTemporalTypeDefaultFormat(Column $column): ?string
+    {
+        $configKey = $this->getTemporalTypeDefaultFormatConfigKey($column);
+
+        return $configKey ? $this->getBuildProperty($configKey) : null;
+    }
+
+    /**
+     * Knows which key in the configuration holds the default format for a
+     * temporal type column.
+     *
+     * @param \Propel\Generator\Model\Column $column
+     *
+     * @return string|null
+     */
+    protected function getTemporalTypeDefaultFormatConfigKey(Column $column): ?string
+    {
+        switch ($column->getType()) {
+            case PropelTypes::DATE:
+                return 'generator.dateTime.defaultDateFormat';
+            case PropelTypes::TIME:
+                return 'generator.dateTime.defaultTimeFormat';
+            case PropelTypes::TIMESTAMP:
+            case PropelTypes::DATETIME:
+                return 'generator.dateTime.defaultTimeStampFormat';
+            default:
+                return null;
+        }
+    }
+
+    /**
      * Adds the function declaration for a temporal accessor.
      *
      * @param string $script
@@ -911,7 +948,7 @@ abstract class " . $this->getUnqualifiedClassName() . $parentClass . ' implement
     {
         $cfc = $column->getPhpName();
 
-        $defaultfmt = null;
+        $defaultfmt = $this->getTemporalTypeDefaultFormat($column);
         $visibility = $column->getAccessorVisibility();
 
         // Default date/time formatter strings are specified in propel config
@@ -919,7 +956,7 @@ abstract class " . $this->getUnqualifiedClassName() . $parentClass . ' implement
             $defaultfmt = $this->getBuildProperty('generator.dateTime.defaultDateFormat');
         } elseif ($column->getType() === PropelTypes::TIME) {
             $defaultfmt = $this->getBuildProperty('generator.dateTime.defaultTimeFormat');
-        } elseif ($column->getType() === PropelTypes::TIMESTAMP) {
+        } elseif ($column->getType() === PropelTypes::TIMESTAMP || $column->getType() === PropelTypes::DATETIME) {
             $defaultfmt = $this->getBuildProperty('generator.dateTime.defaultTimeStampFormat');
         }
 
@@ -983,6 +1020,7 @@ abstract class " . $this->getUnqualifiedClassName() . $parentClass . ' implement
         $dateTimeClass = $this->getDateTimeClass($column);
 
         $this->declareClasses($dateTimeClass);
+
         $defaultfmt = null;
 
         // Default date/time formatter strings are specified in propel config
@@ -2674,7 +2712,7 @@ abstract class " . $this->getUnqualifiedClassName() . $parentClass . ' implement
                     $dateTimeClass = $this->getDateTimeClass($col);
                     $handleMysqlDate = false;
                     if ($this->getPlatform() instanceof MysqlPlatform) {
-                        if ($col->getType() === PropelTypes::TIMESTAMP) {
+                        if (in_array($col->getType(), [PropelTypes::TIMESTAMP, PropelTypes::DATETIME], true)) {
                             $handleMysqlDate = true;
                             $mysqlInvalidDateString = '0000-00-00 00:00:00';
                         } elseif ($col->getType() === PropelTypes::DATE) {
